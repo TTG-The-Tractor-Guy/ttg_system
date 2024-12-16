@@ -44,15 +44,12 @@ INSTALLED_APPS = [
     'apps.owner',
     'apps.admin_portal',
     'rest_framework',
-    'rest_framework.authtoken',
-    'django.contrib.sites', 
-    'allauth', 
-    'allauth.account', 
-    'allauth.socialaccount', 
-    'allauth.socialaccount.providers.google', 
-    'allauth.socialaccount.providers.facebook',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'crispy_forms', 
-    'dj_rest_auth'
+    'django_filters',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -156,8 +152,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # In settings.py
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -190,47 +190,26 @@ CACHES = {
     }
 }
 
-AUTHENTICATION_BACKENDS = [
-    # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend', 
-]
-
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
+    'UPDATE_LAST_LOGIN': True,
 }
 
 
 AUTH_USER_MODEL = 'common.TTGUser'
 
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-# SOCIALACCOUNT_EMAIL_VERIFICATION = True
-# SOCIALACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False  # Disable username requirement
-# USER_MODEL_USERNAME_FIELD = False
 
-
-# REST_AUTH_REGISTER_SERIALIZER = 'common.serializers.CustomRegisterSerializer'
-
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "<Your-Client-ID>"
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "<Your-Client-Secret>"
-
-# SOCIAL_AUTH_FACEBOOK_KEY = '<Your-Facebook-App-ID>'
-# SOCIAL_AUTH_FACEBOOK_SECRET = '<Your-Facebook-App-Secret>'
-
-
-SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # or 'mandatory', 'optional'
-
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+    # OTHER SETTINGS
+}
