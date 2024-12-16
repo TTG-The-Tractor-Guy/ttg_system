@@ -35,7 +35,7 @@ urlpatterns = [
     path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
-    path('token/black-list', TokenVerifyView.as_view(), name='token_black_list'),
+    path('token/black-list', TokenBlacklistView.as_view(), name='token_black_list'),
         # YOUR PATTERNS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
